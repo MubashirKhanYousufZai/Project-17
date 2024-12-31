@@ -1,101 +1,85 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [weight, setWeight] = useState<string>(""); // String for input
+  const [height, setHeight] = useState<string>(""); // String for input
+  const [bmi, setBmi] = useState<number | null>(null); // Number for BMI
+  const [error, setError] = useState<string | null>(null); // Error message
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const calculateBMI = (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent form submission reload
+    setError(null);
+
+    const weightNum = parseFloat(weight);
+    const heightNum = parseFloat(height);
+
+    if (!weight || !height || isNaN(weightNum) || isNaN(heightNum) || heightNum <= 0) {
+      setError("Please enter valid positive numbers for weight and height.");
+      return;
+    }
+
+    const bmiValue = weightNum / (heightNum * heightNum);
+    setBmi(parseFloat(bmiValue.toFixed(2))); // Set BMI with 2 decimal places
+  };
+
+  const getBMICategory = (bmi: number): string => {
+    if (bmi < 18.5) return "Underweight";
+    if (bmi >= 18.5 && bmi < 24.9) return "Normal weight";
+    if (bmi >= 25 && bmi < 29.9) return "Overweight";
+    return "Obesity";
+  };
+
+  return (
+    <div className="bg-slate-100 min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-blue-500 text-4xl font-bold mb-6">BMI Calculator By Mubashir Khan</h1>
+
+      <form
+        onSubmit={calculateBMI}
+        className="bg-white p-6 rounded-lg shadow-md max-w-sm w-full"
+      >
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Weight (kg):</label>
+          <input
+            type="text"
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-blue-600"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Height (m):</label>
+          <input
+            type="text"
+            value={height}
+            onChange={(e) => setHeight(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-blue-600"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        </div>
+
+        {error && (
+          <p className="text-red-500 text-sm mb-4">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          Calculate BMI
+        </button>
+      </form>
+
+      {bmi !== null && (
+        <div className="mt-6 text-center">
+          <h2 className="text-green-500 text-2xl font-semibold">
+            Your BMI: {bmi}
+          </h2>
+          <p className="text-gray-700 text-lg">
+            Category: {getBMICategory(bmi)}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
